@@ -47,7 +47,7 @@ export default class Movable extends Component<Props> {
 
     // Could check to see if another move has started
     // and abort the previous onMoveEnd
-    setTimeout(() => onMoveEnd());
+    setTimeout(onMoveEnd);
   }
 
   getFinal = (): PositionLike => {
@@ -75,11 +75,16 @@ export default class Movable extends Component<Props> {
     const isMovingToOrigin: boolean = isAtOrigin(final);
 
     return (
-      // Expecting a flow error
-      // React Motion type: children: (interpolatedStyle: PlainStyle) => ReactElement
-      // Our type: children: (Position) => (Style) => React.Node
       <Motion defaultStyle={origin} style={final} onRest={this.onRest}>
         {(current: { [string]: number }): any => {
+          // If moving instantly then we can just move straight to the destination
+          // Sadly react-motion does a double call in this case so we need to explictly control this
+          if (this.props.speed === 'INSTANT') {
+            return this.props.children(
+              getTranslate(this.props.destination.x, this.props.destination.y)
+            );
+          }
+
           // If moving to the origin we can just clear the transition
           if (isMovingToOrigin) {
             return this.props.children(noTransition);
@@ -88,14 +93,6 @@ export default class Movable extends Component<Props> {
           // Rather than having a translate of 0px, 0px we just clear the transition
           if (isAtOrigin(current)) {
             return this.props.children(noTransition);
-          }
-
-          // If moving instantly then we can just move straight to the destination
-          // Sadly react-motion does a double call in this case so we need to explictly control this
-          if (this.props.speed === 'INSTANT') {
-            return this.props.children(
-              getTranslate(this.props.destination.x, this.props.destination.y)
-            );
           }
 
           return this.props.children(getTranslate(current.x, current.y));
