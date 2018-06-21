@@ -114,12 +114,8 @@ export default ({
           return;
         }
 
-        if (!state.pending) {
-          console.error('invalid state');
-          return;
-        }
-
-        // drag is pending
+        // drag should be pending
+        invariant(state.pending, 'Expected there to be a pending drag');
 
         // threshold not yet exceeded
         if (!isSloppyClickThresholdExceeded(state.pending, point)) {

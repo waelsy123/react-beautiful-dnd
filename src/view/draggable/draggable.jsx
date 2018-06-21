@@ -33,6 +33,7 @@ import type {
   ZIndexOptions,
 } from './draggable-types';
 import getWindowScroll from '../window/get-window-scroll';
+import throwIfRefIsInvalid from '../throw-if-invalid-inner-ref';
 import type { Speed, Style as MovementStyle } from '../moveable/moveable-types';
 
 export const zIndexOptions: ZIndexOptions = {
@@ -76,12 +77,7 @@ export default class Draggable extends Component<Props> {
   }
 
   componentDidMount() {
-    if (!this.ref) {
-      console.error(`
-        Draggable has not been provided with a ref.
-        Please use the DraggableProvided > innerRef function
-      `);
-    }
+    throwIfRefIsInvalid(this.ref);
   }
 
   componentWillUnmount() {
@@ -92,10 +88,6 @@ export default class Draggable extends Component<Props> {
   // This should already be handled gracefully in DragHandle.
   // Just being extra clear here
   throwIfCannotDrag() {
-    invariant(this.ref, `
-      Draggable: cannot drag as no DOM node has been provided
-      Please ensure you provide a DOM node using the DraggableProvided > innerRef function
-    `);
     invariant(!this.props.isDragDisabled,
       'Draggable: cannot drag as dragging is not enabled'
     );
@@ -194,6 +186,7 @@ export default class Draggable extends Component<Props> {
     // At this point the ref has been changed or initially populated
 
     this.ref = ref;
+    throwIfRefIsInvalid(ref);
   })
 
   getDraggableRef = (): ?HTMLElement => this.ref;
@@ -336,10 +329,7 @@ export default class Draggable extends Component<Props> {
         return null;
       }
 
-      if (!dimension) {
-        console.error('Draggable: Dimension is required for dragging');
-        return null;
-      }
+      invariant(dimension, 'Draggable: Dimension is required for dragging');
 
       return <Placeholder placeholder={dimension.placeholder} />;
     })();
