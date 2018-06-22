@@ -3,7 +3,7 @@ import React from 'react';
 import { type Position } from 'css-box-model';
 import { mount } from 'enzyme';
 import Moveable from '../../../src/view/moveable/';
-import type { Speed, Style } from '../../../src/view/moveable/moveable-types';
+import type { Speed } from '../../../src/view/moveable/moveable-types';
 
 let wrapper;
 let childFn;
@@ -45,13 +45,6 @@ const moveTo = (point: Position, speed?: Speed = 'STANDARD', onMoveEnd?: () => v
   jest.runOnlyPendingTimers();
 };
 
-const getStyle = (point: Position) => {
-  const style: Style = {
-    transform: `translate(${point.x}px, ${point.y}px)`,
-  };
-  return style;
-};
-
 it('should move to the provided destination', () => {
   const destination: Position = {
     x: 100,
@@ -60,7 +53,7 @@ it('should move to the provided destination', () => {
 
   moveTo(destination);
 
-  expect(childFn).toHaveBeenCalledWith(getStyle(destination));
+  expect(childFn).toHaveBeenCalledWith(destination);
 });
 
 it('should call onMoveEnd when the movement is finished', () => {
@@ -90,13 +83,15 @@ it('should move instantly if required', () => {
   });
 
   expect(childFn).toHaveBeenCalledTimes(1);
-  expect(childFn).toHaveBeenCalledWith(getStyle(destination));
+  expect(childFn).toHaveBeenCalledWith(destination);
 
   // React motion is lame
-  childFn.mockClear();
   requestAnimationFrame.flush();
-  expect(childFn).toHaveBeenCalledTimes(1);
-  expect(childFn).toHaveBeenCalledWith(getStyle(destination));
+  expect(childFn).toHaveBeenCalledTimes(2);
+  expect(childFn).toHaveBeenCalledWith(destination);
+
+  // but at least the result should be memoized
+  expect(childFn.mock.calls[0][0]).toBe(childFn.mock.calls[1][0]);
 });
 
 it('should allow multiple movements', () => {
@@ -109,16 +104,12 @@ it('should allow multiple movements', () => {
   positions.forEach((position: Position) => {
     moveTo(position);
 
-    expect(childFn).toBeCalledWith(getStyle(position));
+    expect(childFn).toBeCalledWith(position);
   });
 });
 
 it('should return no movement if the item is at the origin', () => {
-  const expected: Style = {
-    transform: null,
-  };
-
   moveTo({ x: 0, y: 0 });
 
-  expect(childFn).toHaveBeenCalledWith(expected);
+  expect(childFn).toHaveBeenCalledWith({ x: 0, y: 0 });
 });
