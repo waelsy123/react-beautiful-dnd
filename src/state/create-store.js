@@ -48,7 +48,7 @@ export default ({
       // debugging timer
       // require('./debug-middleware/action-timing-middleware').default,
       // average action timer
-      // require('./debug-middleware/action-timing-average-middleware').default(500),
+      require('./debug-middleware/action-timing-average-middleware').default(500),
 
       // ## Application middleware
 

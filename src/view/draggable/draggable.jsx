@@ -287,14 +287,14 @@ export default class Draggable extends Component<Props> {
         return 'STANDARD';
       }
 
-      // if dragging and can animate - then move quickly
       if (isDragging && shouldAnimateDragMovement) {
         return 'FAST';
       }
 
-      // Animation taken care of by css
+      // Animating taken care of by CSS or not at all
       return 'INSTANT';
-    })
+    }
+  )
 
   renderChildren = (movementStyle: MovementStyle, dragHandleProps: ?DragHandleProps): ?Node => {
     const {
