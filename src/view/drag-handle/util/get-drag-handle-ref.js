@@ -1,11 +1,12 @@
 // @flow
 import { dragHandle } from '../../data-attributes';
+import type { HTMLOrSVGElement } from '../../svg-element-type';
 
 const selector: string = `[${dragHandle}]`;
 
 // If called when the component is disabled then the data
 // attribute will not be present
-const getDragHandleRef = (draggableRef: HTMLElement): ?HTMLElement => {
+export default (draggableRef: HTMLOrSVGElement): ?HTMLOrSVGElement => {
   if (draggableRef.hasAttribute(dragHandle)) {
     return draggableRef;
   }
@@ -14,9 +15,7 @@ const getDragHandleRef = (draggableRef: HTMLElement): ?HTMLElement => {
   // querySelector will return the first match on a breadth first search which is what we want
   // Search will fail when the drag handle is disabled
   // https://codepen.io/alexreardon/pen/erOqyZ
-  const el: ?HTMLElement = draggableRef.querySelector(selector);
+  const el: ?HTMLOrSVGElement = draggableRef.querySelector(selector);
 
   return el || null;
 };
-
-export default getDragHandleRef;

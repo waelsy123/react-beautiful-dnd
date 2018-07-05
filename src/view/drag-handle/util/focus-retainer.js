@@ -1,6 +1,8 @@
 // @flow
 import getDragHandleRef from './get-drag-handle-ref';
+import tryFocus from './try-focus';
 import type { DraggableId } from '../../../types';
+import type { HTMLOrSVGElement } from '../../svg-element-type';
 
 type FocusRetainer = {|
   retain: (draggableId: DraggableId) => void,
@@ -74,13 +76,15 @@ const tryRestoreFocus = (id: DraggableId, draggableRef: HTMLElement) => {
   // no need to clear it - we are already clearing it
   clearRetentionOnFocusChange.cancel();
 
-  const dragHandleRef: ?HTMLElement = getDragHandleRef(draggableRef);
+  const dragHandleRef: ?HTMLOrSVGElement = getDragHandleRef(draggableRef);
 
   if (!dragHandleRef) {
-    console.warn('Could not find drag handle in the DOM to focus on it');
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('Could not find drag handle in the DOM to focus on it');
+    }
     return;
   }
-  dragHandleRef.focus();
+  tryFocus(dragHandleRef);
 };
 
 const retainer: FocusRetainer = {

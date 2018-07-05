@@ -5,6 +5,8 @@ import memoizeOne from 'memoize-one';
 import invariant from 'tiny-invariant';
 import getWindowFromRef from '../get-window-from-ref';
 import getDragHandleRef from './util/get-drag-handle-ref';
+import type { HTMLOrSVGElement } from '../svg-element-type';
+import tryFocus from './util/try-focus';
 import type { Props, DragHandleProps } from './drag-handle-types';
 import type {
   MouseSensor,
@@ -85,7 +87,7 @@ export default class DragHandle extends Component<Props> {
       return;
     }
 
-    const dragHandleRef: ?HTMLElement = getDragHandleRef(draggableRef);
+    const dragHandleRef: ?HTMLOrSVGElement = getDragHandleRef(draggableRef);
     invariant(dragHandleRef, 'DragHandle could not find drag handle element');
 
     focusRetainer.tryRestoreFocus(this.props.draggableId, dragHandleRef);
@@ -110,10 +112,10 @@ export default class DragHandle extends Component<Props> {
         return;
       }
 
-      const dragHandleRef: ?HTMLElement = getDragHandleRef(ref);
+      const dragHandleRef: ?HTMLOrSVGElement = getDragHandleRef(ref);
       invariant(dragHandleRef, 'DragHandle could not find drag handle element');
 
-      dragHandleRef.focus();
+      tryFocus(dragHandleRef);
     }
 
     const isCapturing: boolean = this.isAnySensorCapturing();
