@@ -60,13 +60,13 @@ We have created [a free course on `egghead.io`](https://egghead.io/courses/beaut
 - Movement between lists (▤ ↔ ▤)
 - Mouse 🐭, keyboard 🎹 and touch 👉📱 (mobile, tablet and so on) support
 - Auto scrolling - automatically scroll containers and the window as required during a drag (even with keyboard 🔥)
-- [Multi drag support](/docs/patterns/multi-drag.md)
+- [Multi drag support](/docs/guides/multi-drag.md)
 - Incredible screen reader support - we provide an amazing experience for english screen readers out of the box 📦. We also provide complete customisation control and internationalisation support for those who need it 💖
 - Conditional [dragging](https://github.com/atlassian/react-beautiful-dnd#props-1) and [dropping](https://github.com/atlassian/react-beautiful-dnd#conditionally-dropping)
 - Multiple independent lists on the one page
 - Flexible item sizes - the draggable items can have different heights (vertical lists) or widths (horizontal lists)
-- Compatible with semantic table reordering - [table pattern](/docs/patterns/tables.md)
-- Compatible with [`React.Portal`](https://reactjs.org/docs/portals.html) - [portal pattern](/docs/patterns/using-a-portal.md)
+- Compatible with semantic table reordering - [table pattern](/docs/guides/tables.md)
+- Compatible with [`React.Portal`](https://reactjs.org/docs/portals.html) - [portal pattern](/docs/guides/using-a-portal.md)
 - Custom drag handles - you can drag a whole item by just a part of it
 - A `Droppable` list can be a scroll container (without a scrollable parent) or be the child of a scroll container (that also does not have a scrollable parent)
 - Independent nested lists - a list can be a child of another list, but you cannot drag items from the parent list into a child list
@@ -329,7 +329,7 @@ class App extends React.Component {
 
 ## Multi drag
 
-We have created a [multi drag pattern](/docs/patterns/multi-drag.md) that you can build on top of `react-beautiful-dnd` in order to support dragging multiple `Draggable` items at once.
+We have created a [multi drag pattern](/docs/guides/multi-drag.md) that you can build on top of `react-beautiful-dnd` in order to support dragging multiple `Draggable` items at once.
 
 ![multi drag demo](https://user-images.githubusercontent.com/2182637/37322724-7843a218-26d3-11e8-9ebb-8d5853387bb3.gif)
 
@@ -1049,7 +1049,7 @@ It is a contract of this library that it owns the positioning logic of the dragg
 
 `react-beautiful-dnd` uses `position: fixed` to position the dragging element. This is quite robust and allows for you to have `position: relative | absolute | fixed` parents. However, unfortunately `position:fixed` is [impacted by `transform`](http://meyerweb.com/eric/thoughts/2011/09/12/un-fixing-fixed-elements-with-css-transforms/) (such as `transform: rotate(10deg);`). This means that if you have a `transform: *` on one of the parents of a `Draggable` then the positioning logic will be incorrect while dragging. Lame! For most consumers this will not be an issue.
 
-To get around this you can use [`React.Portal`](https://reactjs.org/docs/portals.html). We do not enable this functionality by default as it has performance problems. We have a [using a portal guide](/docs/patterns/using-a-portal.md) explaining the performance problem in more detail and how you can set up your own `React.Portal` if you want to.
+To get around this you can use [`React.Portal`](https://reactjs.org/docs/portals.html). We do not enable this functionality by default as it has performance problems. We have a [using a portal guide](/docs/guides/using-a-portal.md) explaining the performance problem in more detail and how you can set up your own `React.Portal` if you want to.
 
 ##### Focus retention when moving between lists
 
