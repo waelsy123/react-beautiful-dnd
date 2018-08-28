@@ -36,6 +36,8 @@ export default ({
   const previousDroppableOverId: ?DroppableId =
     previousImpact.destination && previousImpact.destination.droppableId;
 
+  console.group('droppable over');
+  console.log('previous droppable over', previousDroppableOverId);
   const destinationId: ?DroppableId = getDroppableOver({
     target: pageBorderBoxCenter,
     draggable,
@@ -43,6 +45,8 @@ export default ({
     droppables,
     previousDroppableOverId,
   });
+  console.log('new droppable over', destinationId);
+  console.groupEnd();
 
   // not dragging over anything
   if (!destinationId) {

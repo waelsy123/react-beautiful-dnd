@@ -217,6 +217,7 @@ const withPlaceholder = (
     droppable.axis.line,
     draggable.placeholder.client.borderBox[droppable.axis.size],
   );
+  debugger;
 
   const newMax: Position = add(max, spaceForPlaceholder);
   // because we are pulling the max forward, on subsequent updates
@@ -250,6 +251,7 @@ export default ({ scrollWindow, scrollDroppable }: Api): FluidScroller => {
 
   const scroller = (state: DraggingState): void => {
     const center: Position = state.current.page.borderBoxCenter;
+    return;
 
     // 1. Can we scroll the viewport?
 
@@ -267,8 +269,9 @@ export default ({ scrollWindow, scrollDroppable }: Api): FluidScroller => {
       requiredWindowScroll &&
       canScrollWindow(viewport, requiredWindowScroll)
     ) {
+      console.warn('scheduling window scroll');
       scheduleWindowScroll(requiredWindowScroll);
-      return;
+      
     }
 
     // 2. We are not scrolling the window. Can we scroll a Droppable?
@@ -329,6 +332,9 @@ export default ({ scrollWindow, scrollDroppable }: Api): FluidScroller => {
     });
 
     if (canScrollDroppable) {
+      console.log('current scroll', result.current);
+      console.log('max scroll', result.max);
+      console.warn('trying to scroll droppable', requiredFrameScroll);
       scheduleDroppableScroll(droppable.descriptor.id, requiredFrameScroll);
     }
   };

@@ -30,6 +30,7 @@ const getRequiredGrowth = memoizeOne(
 
     const getResult = (existingSpace: number): ?Position => {
       // this is the space required for a placeholder
+      // TODO: use `draggable.displacedBy` in 'next' branch
       const requiredSpace: number =
         draggable.page.marginBox[droppable.axis.size];
 
@@ -40,6 +41,7 @@ const getRequiredGrowth = memoizeOne(
         droppable.axis.line,
         requiredSpace - existingSpace,
       );
+      console.log('required growth', requiredGrowth);
 
       return requiredGrowth;
     };
@@ -92,6 +94,7 @@ const getClippedRectWithPlaceholder = ({
     previousDroppableOverId &&
       previousDroppableOverId === droppable.descriptor.id,
   );
+  console.log('was over?', wasOver);
   const clippedPageMarginBox: ?Rect = droppable.viewport.clippedPageMarginBox;
 
   // clipped area is totally hidden behind frame
@@ -99,9 +102,13 @@ const getClippedRectWithPlaceholder = ({
     return clippedPageMarginBox;
   }
 
-  // We only include the placeholder size if it's a
-  // foreign list and is currently being hovered over
-  if (isHome || !wasOver) {
+  // No additional placeholder space needed for home lists
+  if (isHome) {
+    return clippedPageMarginBox;
+  }
+
+  // Only account for placeholder space a droppable has already been hovered over
+  if (!wasOver) {
     return clippedPageMarginBox;
   }
 
@@ -111,7 +118,10 @@ const getClippedRectWithPlaceholder = ({
     droppable,
   );
 
+  console.log('required growth', requiredGrowth);
+
   if (!requiredGrowth) {
+    console.log('not considering placeholder');
     return clippedPageMarginBox;
   }
 
@@ -128,11 +138,21 @@ const getClippedRectWithPlaceholder = ({
 
   // We are not clipping the subject
   if (!closestScrollable.shouldClipSubject) {
+    console.log('not clipping the subject');
     return subjectWithGrowth;
   }
 
   // We need to clip the new subject by the frame which does not change
   // This will allow the user to continue to scroll into the placeholder
+  console.log(
+    'clippin',
+    'original frame bottom',
+    closestScrollable.framePageMarginBox.bottom,
+    'original clippedPageMarginBox',
+    clippedPageMarginBox.bottom,
+    'new clippedPageMarginBox',
+    clip(closestScrollable.framePageMarginBox, subjectWithGrowth).bottom,
+  );
   return clip(closestScrollable.framePageMarginBox, subjectWithGrowth);
 };
 
@@ -177,6 +197,8 @@ export default ({
         return isPositionInFrame(withPlaceholder)(target);
       },
     );
+
+  console.log('over anything?', maybe ? maybe.descriptor.id : null);
 
   return maybe ? maybe.descriptor.id : null;
 };
