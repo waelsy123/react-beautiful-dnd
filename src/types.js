@@ -69,7 +69,7 @@ export type DraggableDimension = {|
 export type Scrollable = {|
   // This is the window through which the droppable is observed
   // It does not change during a drag
-  framePageMarginBox: Rect,
+  pageMarginBox: Rect,
   // Whether or not we should clip the subject by the frame
   // Is controlled by the ignoreContainerClipping prop
   shouldClipSubject: boolean,
@@ -88,14 +88,17 @@ export type Scrollable = {|
   |},
 |};
 
-export type DroppableDimensionViewport = {|
-  // will be null if there is no closest scrollable
-  closestScrollable: ?Scrollable,
-  subjectPageMarginBox: Rect,
-  // this is the subject through the viewport of the frame (if applicable)
-  // it also takes into account any changes to the viewport scroll
-  // clipped area will be null if it is completely outside of the frame and frame clipping is on
-  clippedPageMarginBox: ?Rect,
+export type DroppableSubject = {|
+  // raw, unchanging
+  pageMarginBox: Rect,
+  withPlaceholderSize: Position,
+  // The hitbox for a droppable
+  // - page margin box
+  // - with scroll changes
+  // - with any additional droppable placeholder
+  // - clipped by frame
+  // The subject will be null if the hit area is completely empty
+  active: ?Rect,
 |};
 
 export type DroppableDimension = {|
@@ -107,7 +110,9 @@ export type DroppableDimension = {|
   // relative to the whole page
   page: BoxModel,
   // The container of the droppable
-  viewport: DroppableDimensionViewport,
+  frame: ?Scrollable,
+  // what is visible through the frame
+  subject: DroppableSubject,
 |};
 export type DraggableLocation = {|
   droppableId: DroppableId,

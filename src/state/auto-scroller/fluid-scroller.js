@@ -193,47 +193,47 @@ type WithPlaceholderResult = {|
   max: Position,
 |};
 
-const withPlaceholder = (
-  droppable: DroppableDimension,
-  draggable: DraggableDimension,
-): ?WithPlaceholderResult => {
-  const closest: ?Scrollable = droppable.viewport.closestScrollable;
+// const withPlaceholder = (
+//   droppable: DroppableDimension,
+//   draggable: DraggableDimension,
+// ): ?WithPlaceholderResult => {
+//   const closest: ?Scrollable = droppable.viewport.closestScrollable;
 
-  if (!closest) {
-    return null;
-  }
+//   if (!closest) {
+//     return null;
+//   }
 
-  const isOverHome: boolean =
-    droppable.descriptor.id === draggable.descriptor.droppableId;
-  const max: Position = closest.scroll.max;
-  const current: Position = closest.scroll.current;
+//   const isOverHome: boolean =
+//     droppable.descriptor.id === draggable.descriptor.droppableId;
+//   const max: Position = closest.scroll.max;
+//   const current: Position = closest.scroll.current;
 
-  // only need to add the buffer for foreign lists
-  if (isOverHome) {
-    return { max, current };
-  }
+//   // only need to add the buffer for foreign lists
+//   if (isOverHome) {
+//     return { max, current };
+//   }
 
-  const spaceForPlaceholder: Position = patch(
-    droppable.axis.line,
-    draggable.placeholder.client.borderBox[droppable.axis.size],
-  );
-  debugger;
+//   const spaceForPlaceholder: Position = patch(
+//     droppable.axis.line,
+//     draggable.placeholder.client.borderBox[droppable.axis.size],
+//   );
+//   debugger;
 
-  const newMax: Position = add(max, spaceForPlaceholder);
-  // because we are pulling the max forward, on subsequent updates
-  // it is possible for the current position to be greater than the max
-  // as such we need to ensure that the current position is never bigger
-  // than the max position
-  const newCurrent: Position = {
-    x: Math.min(current.x, newMax.x),
-    y: Math.min(current.y, newMax.y),
-  };
+//   const newMax: Position = add(max, spaceForPlaceholder);
+//   // because we are pulling the max forward, on subsequent updates
+//   // it is possible for the current position to be greater than the max
+//   // as such we need to ensure that the current position is never bigger
+//   // than the max position
+//   const newCurrent: Position = {
+//     x: Math.min(current.x, newMax.x),
+//     y: Math.min(current.y, newMax.y),
+//   };
 
-  return {
-    max: newMax,
-    current: newCurrent,
-  };
-};
+//   return {
+//     max: newMax,
+//     current: newCurrent,
+//   };
+// };
 
 type Api = {|
   scrollWindow: (change: Position) => void,
@@ -251,7 +251,6 @@ export default ({ scrollWindow, scrollDroppable }: Api): FluidScroller => {
 
   const scroller = (state: DraggingState): void => {
     const center: Position = state.current.page.borderBoxCenter;
-    return;
 
     // 1. Can we scroll the viewport?
 
@@ -271,7 +270,6 @@ export default ({ scrollWindow, scrollDroppable }: Api): FluidScroller => {
     ) {
       console.warn('scheduling window scroll');
       scheduleWindowScroll(requiredWindowScroll);
-      
     }
 
     // 2. We are not scrolling the window. Can we scroll a Droppable?
@@ -288,15 +286,15 @@ export default ({ scrollWindow, scrollDroppable }: Api): FluidScroller => {
     }
 
     // We know this has a closestScrollable
-    const closestScrollable: ?Scrollable = droppable.viewport.closestScrollable;
+    const frame: ?Scrollable = droppable.frame;
 
     // this should never happen - just being safe
-    if (!closestScrollable) {
+    if (!frame) {
       return;
     }
 
     const requiredFrameScroll: ?Position = getRequiredScroll({
-      container: closestScrollable.framePageMarginBox,
+      container: frame.pageMarginBox,
       subject,
       center,
     });
@@ -306,35 +304,32 @@ export default ({ scrollWindow, scrollDroppable }: Api): FluidScroller => {
     }
 
     // need to adjust the current and max scroll positions to account for placeholders
-    const result: ?WithPlaceholderResult = withPlaceholder(
-      droppable,
-      draggable,
-    );
+    // const result: ?WithPlaceholderResult = withPlaceholder(
+    //   droppable,
+    //   draggable,
+    // );
 
-    if (!result) {
-      return;
-    }
+    // if (!result) {
+    //   return;
+    // }
 
     // Cannot use the standard canScrollDroppable function as we have
     // modified the max and current values
 
     // Cannot scroll if there is no scrollable
-    const closest: ?Scrollable = droppable.viewport.closestScrollable;
+    // const closest: ?Scrollable = droppable.viewport.closestScrollable;
 
-    if (!closest) {
-      return;
-    }
+    // if (!closest) {
+    //   return;
+    // }
 
     const canScrollDroppable: boolean = canPartiallyScroll({
-      current: result.current,
-      max: result.max,
+      current: frame.scroll.current,
+      max: frame.scroll.max,
       change: requiredFrameScroll,
     });
 
     if (canScrollDroppable) {
-      console.log('current scroll', result.current);
-      console.log('max scroll', result.max);
-      console.warn('trying to scroll droppable', requiredFrameScroll);
       scheduleDroppableScroll(droppable.descriptor.id, requiredFrameScroll);
     }
   };

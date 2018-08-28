@@ -15,7 +15,8 @@ import type {
   DroppableDimension,
   DroppableDescriptor,
   Scrollable,
-  DroppableDimensionViewport,
+  DroppableSubject,
+  Axis,
 } from '../types';
 
 export const clip = (frame: Spacing, subject: Spacing): ?Rect => {
@@ -51,6 +52,38 @@ type GetDroppableArgs = {|
   closest?: ?Closest,
 |};
 
+type GetSubjectArgs = {|
+  pageMarginBox: Rect,
+  withPlaceholderSize: Position,
+  axis: Axis,
+  scrollDisplacement: Position,
+  frame: ?Scrollable,
+|};
+
+const getSubject = ({
+  pageMarginBox,
+  withPlaceholderSize,
+  axis,
+  scrollDisplacement,
+  frame,
+}: GetSubjectArgs): DroppableSubject => {
+  const scrolled: Spacing = offsetByPosition(pageMarginBox, scrollDisplacement);
+  const expanded: Spacing = {
+    ...scrolled,
+    [axis.end]: scrolled[axis.end] + withPlaceholderSize[axis.line],
+  };
+  const clipped: ?Rect =
+    frame && frame.shouldClipSubject
+      ? clip(frame.pageMarginBox, expanded)
+      : getRect(expanded);
+
+  return {
+    pageMarginBox,
+    withPlaceholderSize,
+    active: clipped,
+  };
+};
+
 export const getDroppableDimension = ({
   descriptor,
   isEnabled,
@@ -59,7 +92,7 @@ export const getDroppableDimension = ({
   page,
   closest,
 }: GetDroppableArgs): DroppableDimension => {
-  const scrollable: ?Scrollable = (() => {
+  const frame: ?Scrollable = (() => {
     if (!closest) {
       return null;
     }
@@ -74,7 +107,7 @@ export const getDroppableDimension = ({
     });
 
     return {
-      framePageMarginBox: closest.page.marginBox,
+      pageMarginBox: closest.page.marginBox,
       shouldClipSubject: closest.shouldClipSubject,
       scroll: {
         initial: closest.scroll,
@@ -89,38 +122,73 @@ export const getDroppableDimension = ({
   })();
 
   const subjectPageMarginBox: Rect = page.marginBox;
+  const axis: Axis = direction === 'vertical' ? vertical : horizontal;
 
-  const clippedPageMarginBox: ?Rect =
-    scrollable && scrollable.shouldClipSubject
-      ? clip(scrollable.framePageMarginBox, subjectPageMarginBox)
-      : subjectPageMarginBox;
-
-  const viewport: DroppableDimensionViewport = {
-    closestScrollable: scrollable,
-    subjectPageMarginBox,
-    clippedPageMarginBox,
-  };
+  const subject: DroppableSubject = getSubject({
+    pageMarginBox: subjectPageMarginBox,
+    withPlaceholderSize: origin,
+    axis,
+    scrollDisplacement: origin,
+    frame,
+  });
 
   const dimension: DroppableDimension = {
     descriptor,
-    axis: direction === 'vertical' ? vertical : horizontal,
+    axis,
     isEnabled,
     client,
     page,
-    viewport,
+    frame,
+    subject,
   };
 
   return dimension;
+};
+
+export const withPlaceholder = (
+  droppable: DroppableDimension,
+  withPlaceholderSize: Position,
+): DroppableDimension => {
+  const subject: DroppableSubject = getSubject({
+    pageMarginBox: droppable.subject.pageMarginBox,
+    withPlaceholderSize,
+    axis: droppable.axis,
+    scrollDisplacement: droppable.frame
+      ? droppable.frame.scroll.diff.displacement
+      : origin,
+    frame: droppable.frame,
+  });
+  return {
+    ...droppable,
+    subject,
+  };
+};
+
+export const withoutPlaceholder = (
+  droppable: DroppableDimension,
+): DroppableDimension => {
+  const subject: DroppableSubject = getSubject({
+    pageMarginBox: droppable.subject.pageMarginBox,
+    withPlaceholderSize: origin,
+    axis: droppable.axis,
+    scrollDisplacement: droppable.frame
+      ? droppable.frame.scroll.diff.displacement
+      : origin,
+    frame: droppable.frame,
+  });
+  return {
+    ...droppable,
+    subject,
+  };
 };
 
 export const scrollDroppable = (
   droppable: DroppableDimension,
   newScroll: Position,
 ): DroppableDimension => {
-  invariant(droppable.viewport.closestScrollable);
+  invariant(droppable.frame);
 
-  const scrollable: Scrollable = droppable.viewport.closestScrollable;
-  const framePageMarginBox: Rect = scrollable.framePageMarginBox;
+  const scrollable: Scrollable = droppable.frame;
 
   const scrollDiff: Position = subtract(newScroll, scrollable.scroll.initial);
   // a positive scroll difference leads to a negative displacement
@@ -130,8 +198,8 @@ export const scrollDroppable = (
   // Sometimes it is possible to scroll beyond the max point.
   // This can occur when scrolling a foreign list that now has a placeholder.
 
-  const closestScrollable: Scrollable = {
-    framePageMarginBox: scrollable.framePageMarginBox,
+  const frame: Scrollable = {
+    pageMarginBox: scrollable.pageMarginBox,
     shouldClipSubject: scrollable.shouldClipSubject,
     scroll: {
       initial: scrollable.scroll.initial,
@@ -144,34 +212,17 @@ export const scrollDroppable = (
       max: scrollable.scroll.max,
     },
   };
-
-  const displacedSubject: Spacing = offsetByPosition(
-    droppable.viewport.subjectPageMarginBox,
+  const subject: DroppableSubject = getSubject({
+    pageMarginBox: droppable.subject.pageMarginBox,
+    withPlaceholderSize: droppable.subject.withPlaceholderSize,
+    axis: droppable.axis,
     scrollDisplacement,
-  );
-
-  const clippedPageMarginBox: ?Rect = closestScrollable.shouldClipSubject
-    ? clip(framePageMarginBox, displacedSubject)
-    : getRect(displacedSubject);
-
-  const viewport: DroppableDimensionViewport = {
-    closestScrollable,
-    subjectPageMarginBox: droppable.viewport.subjectPageMarginBox,
-    clippedPageMarginBox,
-  };
-
+    frame,
+  });
   const result: DroppableDimension = {
     ...droppable,
-    viewport,
+    frame,
+    subject,
   };
   return result;
 };
-
-// TODO: make this work
-// const growSubjectIfNeeded = ({
-//   draggables: DraggableDimensionMap,
-//   droppable: DroppableDimension,
-//   addition: Position,
-// }): DroppableDimension => {
-
-// };

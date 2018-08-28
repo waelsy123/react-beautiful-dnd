@@ -82,79 +82,81 @@ const getWithGrowth = memoizeOne(
     getRect(expandByPosition(area, growth)),
 );
 
-const getClippedRectWithPlaceholder = ({
-  draggable,
-  draggables,
-  droppable,
-  previousDroppableOverId,
-}: GetBufferedDroppableArgs): ?Rect => {
-  const isHome: boolean =
-    draggable.descriptor.droppableId === droppable.descriptor.id;
-  const wasOver: boolean = Boolean(
-    previousDroppableOverId &&
-      previousDroppableOverId === droppable.descriptor.id,
-  );
-  console.log('was over?', wasOver);
-  const clippedPageMarginBox: ?Rect = droppable.viewport.clippedPageMarginBox;
+// const getClippedRectWithPlaceholder = ({
+//   draggable,
+//   draggables,
+//   droppable,
+//   previousDroppableOverId,
+// }: GetBufferedDroppableArgs): ?Rect => {
+//   const isHome: boolean =
+//     draggable.descriptor.droppableId === droppable.descriptor.id;
+//   const wasOver: boolean = Boolean(
+//     previousDroppableOverId &&
+//       previousDroppableOverId === droppable.descriptor.id,
+//   );
+//   console.log('was over?', wasOver);
+//   const clippedPageMarginBox: ?Rect = droppable.viewport.clippedPageMarginBox;
 
-  // clipped area is totally hidden behind frame
-  if (!clippedPageMarginBox) {
-    return clippedPageMarginBox;
-  }
+//   // clipped area is totally hidden behind frame
+//   if (!clippedPageMarginBox) {
+//     return clippedPageMarginBox;
+//   }
 
-  // No additional placeholder space needed for home lists
-  if (isHome) {
-    return clippedPageMarginBox;
-  }
+//   // No additional placeholder space needed for home lists
+//   if (isHome) {
+//     return clippedPageMarginBox;
+//   }
 
-  // Only account for placeholder space a droppable has already been hovered over
-  if (!wasOver) {
-    return clippedPageMarginBox;
-  }
+//   // Only account for placeholder space a droppable has already been hovered over
+//   if (!wasOver) {
+//     return clippedPageMarginBox;
+//   }
 
-  const requiredGrowth: ?Position = getRequiredGrowth(
-    draggable,
-    draggables,
-    droppable,
-  );
+//   const requiredGrowth: ?Position = getRequiredGrowth(
+//     draggable,
+//     draggables,
+//     droppable,
+//   );
 
-  console.log('required growth', requiredGrowth);
+//   console.log('required growth', requiredGrowth);
 
-  if (!requiredGrowth) {
-    console.log('not considering placeholder');
-    return clippedPageMarginBox;
-  }
+//   if (!requiredGrowth) {
+//     console.log('not considering placeholder');
+//     return clippedPageMarginBox;
+//   }
 
-  const subjectWithGrowth: Rect = getWithGrowth(
-    clippedPageMarginBox,
-    requiredGrowth,
-  );
-  const closestScrollable: ?Scrollable = droppable.viewport.closestScrollable;
+//   const subjectWithGrowth: Rect = getWithGrowth(
+//     clippedPageMarginBox,
+//     requiredGrowth,
+//   );
+//   const closestScrollable: ?Scrollable = droppable.viewport.closestScrollable;
 
-  // The droppable has no scroll container
-  if (!closestScrollable) {
-    return subjectWithGrowth;
-  }
+//   // The droppable has no scroll container
+//   if (!closestScrollable) {
+//     return subjectWithGrowth;
+//   }
 
-  // We are not clipping the subject
-  if (!closestScrollable.shouldClipSubject) {
-    console.log('not clipping the subject');
-    return subjectWithGrowth;
-  }
+//   // We are not clipping the subject
+//   if (!closestScrollable.shouldClipSubject) {
+//     console.log('not clipping the subject');
+//     return subjectWithGrowth;
+//   }
 
-  // We need to clip the new subject by the frame which does not change
-  // This will allow the user to continue to scroll into the placeholder
-  console.log(
-    'clippin',
-    'original frame bottom',
-    closestScrollable.framePageMarginBox.bottom,
-    'original clippedPageMarginBox',
-    clippedPageMarginBox.bottom,
-    'new clippedPageMarginBox',
-    clip(closestScrollable.framePageMarginBox, subjectWithGrowth).bottom,
-  );
-  return clip(closestScrollable.framePageMarginBox, subjectWithGrowth);
-};
+//   // We need to clip the new subject by the frame which does not change
+//   // This will allow the user to continue to scroll into the placeholder
+//   console.group('clippin');
+//   console.log(
+//     'original frame bottom',
+//     closestScrollable.framePageMarginBox.bottom,
+//   );
+//   console.log('original clippedPageMarginBox', clippedPageMarginBox.bottom);
+//   console.log(
+//     'new clippedPageMarginBox',
+//     clip(closestScrollable.framePageMarginBox, subjectWithGrowth).bottom,
+//   );
+//   console.groupEnd();
+//   return clip(closestScrollable.framePageMarginBox, subjectWithGrowth);
+// };
 
 type Args = {|
   target: Position,
@@ -179,14 +181,19 @@ export default ({
         // If previously dragging over a droppable we give it a
         // bit of room on the subsequent drags so that user and move
         // items in the space that the placeholder takes up
-        const withPlaceholder: ?Rect = getClippedRectWithPlaceholder({
-          draggable,
-          draggables,
-          droppable,
-          previousDroppableOverId,
-        });
+        // const withPlaceholder: ?Rect = getClippedRectWithPlaceholder({
+        //   draggable,
+        //   draggables,
+        //   droppable,
+        //   previousDroppableOverId,
+        // });
 
-        if (!withPlaceholder) {
+        // if (!withPlaceholder) {
+        //   return false;
+        // }
+        const active: ?Rect = droppable.subject.active;
+
+        if (!active) {
           return false;
         }
 
@@ -194,7 +201,7 @@ export default ({
         // as the target might be off screen if dragging a large draggable
         // Not adjusting target for droppable scroll as we are just checking
         // if it is over the droppable - not its internal impact
-        return isPositionInFrame(withPlaceholder)(target);
+        return isPositionInFrame(active)(target);
       },
     );
 

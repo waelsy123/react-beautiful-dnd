@@ -3,15 +3,15 @@ import type { Position } from 'css-box-model';
 import invariant from 'tiny-invariant';
 import { scrollDroppable } from './droppable-dimension';
 import getDragImpact from './get-drag-impact';
+import getHomeImpact from './get-home-impact';
+import isMovementAllowed from './is-movement-allowed';
 // import publish from './publish';
 import moveInDirection, {
   type Result as MoveInDirectionResult,
 } from './move-in-direction';
-import { add, isEqual, subtract, origin } from './position';
+import { add, isEqual, origin } from './position';
 import scrollViewport from './scroll-viewport';
-import getHomeImpact from './get-home-impact';
-import getPageItemPositions from './get-page-item-positions';
-import isMovementAllowed from './is-movement-allowed';
+import moveWithPositionUpdates from './move-with-position-updates';
 import type {
   State,
   DroppableDimension,
@@ -19,7 +19,6 @@ import type {
   IdleState,
   PreparingState,
   DraggingState,
-  ItemPositions,
   DragPositions,
   CollectingState,
   DropAnimatingState,
@@ -33,84 +32,6 @@ import type { Action } from './store-types';
 
 const idle: IdleState = { phase: 'IDLE' };
 const preparing: PreparingState = { phase: 'PREPARING' };
-
-type MoveArgs = {|
-  state: DraggingState | CollectingState,
-  clientSelection: Position,
-  shouldAnimate: boolean,
-  viewport?: Viewport,
-  // force a custom drag impact
-  impact?: ?DragImpact,
-  // provide a scroll jump request (optionally provided - and can be null)
-  scrollJumpRequest?: ?Position,
-|};
-
-const moveWithPositionUpdates = ({
-  state,
-  clientSelection,
-  shouldAnimate,
-  viewport,
-  impact,
-  scrollJumpRequest,
-}: MoveArgs): CollectingState | DraggingState => {
-  // DRAGGING: can update position and impact
-  // COLLECTING: can update position but cannot update impact
-
-  const newViewport: Viewport = viewport || state.viewport;
-  const currentWindowScroll: Position = newViewport.scroll.current;
-
-  const client: ItemPositions = (() => {
-    const offset: Position = subtract(
-      clientSelection,
-      state.initial.client.selection,
-    );
-    return {
-      offset,
-      selection: clientSelection,
-      borderBoxCenter: add(state.initial.client.borderBoxCenter, offset),
-    };
-  })();
-
-  const page: ItemPositions = getPageItemPositions(client, currentWindowScroll);
-
-  const current: DragPositions = {
-    client,
-    page,
-  };
-
-  // Not updating impact while bulk collecting
-  if (state.phase === 'COLLECTING') {
-    return {
-      // adding phase to appease flow (even though it will be overwritten by spread)
-      phase: 'COLLECTING',
-      ...state,
-      current,
-    };
-  }
-
-  const newImpact: DragImpact =
-    impact ||
-    getDragImpact({
-      pageBorderBoxCenter: page.borderBoxCenter,
-      draggable: state.dimensions.draggables[state.critical.draggable.id],
-      draggables: state.dimensions.draggables,
-      droppables: state.dimensions.droppables,
-      previousImpact: state.impact,
-      viewport: newViewport,
-    });
-
-  // dragging!
-  const result: DraggingState = {
-    ...state,
-    current,
-    shouldAnimate,
-    impact: newImpact,
-    scrollJumpRequest: scrollJumpRequest || null,
-    viewport: newViewport,
-  };
-
-  return result;
-};
 
 export default (state: State = idle, action: Action): State => {
   if (action.type === 'CLEAN') {
