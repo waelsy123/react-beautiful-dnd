@@ -1,7 +1,7 @@
 // @flow
 import { getRect, type Position } from 'css-box-model';
-import moveToNextIndex from '../../../../src/state/move-in-direction/move-to-next-index';
-import type { Result } from '../../../../src/state/move-in-direction/move-to-next-index/move-to-next-index-types';
+import moveToNextLocation from '../../../../src/state/move-in-direction/move-to-next-location';
+import type { Result } from '../../../../src/state/move-in-direction/move-to-next-location/move-to-next-location-types';
 import { scrollDroppable } from '../../../../src/state/droppable-dimension';
 import {
   getPreset,
@@ -56,7 +56,7 @@ describe('move to next index', () => {
       it('should return null if the droppable is disabled', () => {
         const disabled: DroppableDimension = disableDroppable(preset.home);
 
-        const result: ?Result = moveToNextIndex({
+        const result: ?Result = moveToNextLocation({
           isMovingForward: true,
           draggableId: preset.inHome1.descriptor.id,
           previousPageBorderBoxCenter: preset.inHome1.page.borderBox.center,
@@ -83,7 +83,7 @@ describe('move to next index', () => {
               },
             };
 
-            const result: ?Result = moveToNextIndex({
+            const result: ?Result = moveToNextLocation({
               isMovingForward: true,
               draggableId: preset.inHome3.descriptor.id,
               previousImpact,
@@ -108,7 +108,7 @@ describe('move to next index', () => {
                 direction: axis.direction,
                 destination,
               };
-              const result: ?Result = moveToNextIndex({
+              const result: ?Result = moveToNextLocation({
                 isMovingForward: true,
                 draggableId: preset.inHome1.descriptor.id,
                 previousImpact,
@@ -173,7 +173,7 @@ describe('move to next index', () => {
                 direction: axis.direction,
                 destination,
               };
-              const result: ?Result = moveToNextIndex({
+              const result: ?Result = moveToNextLocation({
                 isMovingForward: true,
                 draggableId: preset.inHome2.descriptor.id,
                 previousImpact,
@@ -253,7 +253,7 @@ describe('move to next index', () => {
                 },
               };
 
-              const result: ?Result = moveToNextIndex({
+              const result: ?Result = moveToNextLocation({
                 isMovingForward: true,
                 draggableId: preset.inHome1.descriptor.id,
                 previousImpact,
@@ -344,7 +344,7 @@ describe('move to next index', () => {
                   droppableId: preset.home.descriptor.id,
                 },
               };
-              const result: ?Result = moveToNextIndex({
+              const result: ?Result = moveToNextLocation({
                 isMovingForward: true,
                 draggableId: preset.inHome2.descriptor.id,
                 previousImpact,
@@ -429,7 +429,7 @@ describe('move to next index', () => {
                 },
               };
               // moving draggable3 forward one position
-              const result: ?Result = moveToNextIndex({
+              const result: ?Result = moveToNextLocation({
                 isMovingForward: true,
                 draggableId: preset.inHome3.descriptor.id,
                 previousImpact,
@@ -757,7 +757,7 @@ describe('move to next index', () => {
                   },
                 };
 
-                const result: ?Result = moveToNextIndex({
+                const result: ?Result = moveToNextLocation({
                   isMovingForward: false,
                   draggableId: inHome1.descriptor.id,
                   previousImpact,
@@ -796,7 +796,7 @@ describe('move to next index', () => {
               },
             };
 
-            const result: ?Result = moveToNextIndex({
+            const result: ?Result = moveToNextLocation({
               isMovingForward: false,
               draggableId: preset.inHome1.descriptor.id,
               previousImpact,
@@ -827,7 +827,7 @@ describe('move to next index', () => {
                 },
                 direction: axis.direction,
               };
-              const result: ?Result = moveToNextIndex({
+              const result: ?Result = moveToNextLocation({
                 isMovingForward: false,
                 draggableId: preset.inHome2.descriptor.id,
                 previousImpact,
@@ -898,7 +898,7 @@ describe('move to next index', () => {
                 },
                 direction: axis.direction,
               };
-              const result: ?Result = moveToNextIndex({
+              const result: ?Result = moveToNextLocation({
                 isMovingForward: false,
                 draggableId: preset.inHome3.descriptor.id,
                 previousImpact,
@@ -979,7 +979,7 @@ describe('move to next index', () => {
                   droppableId: preset.home.descriptor.id,
                 },
               };
-              const result: ?Result = moveToNextIndex({
+              const result: ?Result = moveToNextLocation({
                 isMovingForward: false,
                 draggableId: preset.inHome2.descriptor.id,
                 previousImpact,
@@ -1064,7 +1064,7 @@ describe('move to next index', () => {
                   droppableId: preset.home.descriptor.id,
                 },
               };
-              const result: ?Result = moveToNextIndex({
+              const result: ?Result = moveToNextLocation({
                 isMovingForward: false,
                 draggableId: preset.inHome1.descriptor.id,
                 previousImpact,
@@ -1217,7 +1217,7 @@ describe('move to next index', () => {
                 direction: axis.direction,
               };
 
-              const result: ?Result = moveToNextIndex({
+              const result: ?Result = moveToNextLocation({
                 isMovingForward: true,
                 draggableId: asBigAsViewport.descriptor.id,
                 previousImpact,
@@ -1304,7 +1304,7 @@ describe('move to next index', () => {
                 direction: axis.direction,
               };
 
-              const result: ?Result = moveToNextIndex({
+              const result: ?Result = moveToNextLocation({
                 isMovingForward: true,
                 draggableId: visible.descriptor.id,
                 previousImpact,
@@ -1428,7 +1428,7 @@ describe('move to next index', () => {
                 direction: axis.direction,
               };
 
-              const result: ?Result = moveToNextIndex({
+              const result: ?Result = moveToNextLocation({
                 isMovingForward: true,
                 draggableId: inside.descriptor.id,
                 previousImpact,
@@ -1492,7 +1492,7 @@ describe('move to next index', () => {
               },
             };
 
-            const result: ?Result = moveToNextIndex({
+            const result: ?Result = moveToNextLocation({
               isMovingForward: true,
               draggableId: preset.inHome1.descriptor.id,
               previousImpact,
@@ -1577,7 +1577,7 @@ describe('move to next index', () => {
               },
             };
 
-            const result: ?Result = moveToNextIndex({
+            const result: ?Result = moveToNextLocation({
               isMovingForward: true,
               draggableId: preset.inHome1.descriptor.id,
               previousImpact,
@@ -1644,7 +1644,7 @@ describe('move to next index', () => {
               },
             };
 
-            const result: ?Result = moveToNextIndex({
+            const result: ?Result = moveToNextLocation({
               isMovingForward: true,
               draggableId: preset.inHome1.descriptor.id,
               previousImpact,
@@ -1703,7 +1703,7 @@ describe('move to next index', () => {
               },
             };
 
-            const result: ?Result = moveToNextIndex({
+            const result: ?Result = moveToNextLocation({
               isMovingForward: false,
               draggableId: preset.inHome1.descriptor.id,
               previousImpact,
@@ -1743,7 +1743,7 @@ describe('move to next index', () => {
               },
             };
 
-            const result: ?Result = moveToNextIndex({
+            const result: ?Result = moveToNextLocation({
               isMovingForward: false,
               draggableId: preset.inHome1.descriptor.id,
               previousImpact,
@@ -1840,7 +1840,7 @@ describe('move to next index', () => {
               },
             };
 
-            const result: ?Result = moveToNextIndex({
+            const result: ?Result = moveToNextLocation({
               isMovingForward: false,
               draggableId: preset.inHome1.descriptor.id,
               previousImpact,
