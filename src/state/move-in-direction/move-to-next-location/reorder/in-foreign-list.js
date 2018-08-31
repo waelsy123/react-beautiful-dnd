@@ -1,28 +1,29 @@
 // @flow
 import invariant from 'tiny-invariant';
 import { type Position } from 'css-box-model';
-import getDraggablesInsideDroppable from '../../get-draggables-inside-droppable';
-import { subtract } from '../../position';
-import withDroppableDisplacement from '../../with-droppable-displacement';
-import moveToEdge from '../../move-to-edge';
+import getDraggablesInsideDroppable from '../../../get-draggables-inside-droppable';
+import { subtract } from '../../../position';
+import withDroppableDisplacement from '../../../with-droppable-displacement';
+import moveToEdge from '../../../move-to-edge';
 import isTotallyVisibleInNewLocation from './is-totally-visible-in-new-location';
 import { withFirstAdded, withFirstRemoved } from './get-forced-displacement';
-import getDisplacementMap from '../../get-displacement-map';
-import getDisplacedBy from '../../get-displaced-by';
-import type { Edge } from '../../move-to-edge';
-import type { Args, Result } from './move-to-next-location-types';
+import getDisplacementMap from '../../../get-displacement-map';
+import getDisplacedBy from '../../../get-displaced-by';
+import type { Edge } from '../../../move-to-edge';
+import type { Args, Result } from '../move-to-next-location-types';
 import type {
   DraggableLocation,
   DraggableDimension,
+  DraggableId,
   Axis,
   DragImpact,
   Displacement,
   DisplacedBy,
-} from '../../../types';
+} from '../../../../types';
 
 export default ({
   isMovingForward,
-  draggableId,
+  critical,
   previousImpact,
   previousPageBorderBoxCenter,
   droppable,
@@ -34,6 +35,7 @@ export default ({
     'Cannot move to next index where there is no previous destination',
   );
 
+  const draggableId: DraggableId = critical.draggable.id;
   const location: DraggableLocation = previousImpact.destination;
   const draggable: DraggableDimension = draggables[draggableId];
   const axis: Axis = droppable.axis;

@@ -66,7 +66,7 @@ export default ({ state, type }: Args): ?Result => {
   if (isMovingOnMainAxis) {
     const result: ?MoveToNextIndexResult = moveToNextLocation({
       isMovingForward,
-      draggableId: state.critical.draggable.id,
+      critical: state.critical,
       droppable,
       draggables: state.dimensions.draggables,
       previousPageBorderBoxCenter: state.current.page.borderBoxCenter,

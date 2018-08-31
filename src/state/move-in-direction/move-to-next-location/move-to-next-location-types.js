@@ -1,7 +1,7 @@
 // @flow
 import { type Position } from 'css-box-model';
 import type {
-  DraggableId,
+  Critical,
   DragImpact,
   DroppableDimension,
   DraggableDimensionMap,
@@ -10,7 +10,7 @@ import type {
 
 export type Args = {|
   isMovingForward: boolean,
-  draggableId: DraggableId,
+  critical: Critical,
   previousPageBorderBoxCenter: Position,
   previousImpact: DragImpact,
   droppable: DroppableDimension,
