@@ -62,7 +62,7 @@
     "tiny-invariant": "^1.0.0"
   },
   "devDependencies": {
-    "@atlaskit/css-reset": "^3.0.1",
+    "@atlaskit/css-reset": "^3.0.2",
     "@babel/core": "^7.0.0",
     "@babel/plugin-proposal-class-properties": "^7.0.0",
     "@babel/plugin-transform-modules-commonjs": "^7.0.0",
