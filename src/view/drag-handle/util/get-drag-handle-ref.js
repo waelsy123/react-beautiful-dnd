@@ -1,22 +1,11 @@
 // @flow
 import invariant from 'tiny-invariant';
 import { dragHandle } from '../../data-attributes';
+import { isSVG, isHTMLElement } from '../../duck-types';
 
 const selector: string = `[${dragHandle}]`;
 
-const isSVG = (el: mixed) => {
-  // Some test runners are not aware of the SVGElement constructor
-  // We opt out of this check for those environments
-  // $FlowFixMe - flow does not know about SVGElement
-  if (typeof SVGElement === 'undefined') {
-    return false;
-  }
-
-  // $FlowFixMe - flow does not know about SVGElement
-  return el instanceof SVGElement;
-};
-
-const throwIfSVG = (el: mixed) => {
+const throwIfSVG = (el: Object) => {
   invariant(
     !isSVG(el),
     `A drag handle cannot be an SVGElement: it has inconsistent focus support.
@@ -51,7 +40,7 @@ const getDragHandleRef = (draggableRef: HTMLElement): HTMLElement => {
     `,
   );
 
-  invariant(el instanceof HTMLElement, 'A drag handle must be a HTMLElement');
+  invariant(isHTMLElement(el), 'A drag handle must be a HTMLElement');
 
   return el;
 };
