@@ -66,6 +66,16 @@ afterEach(() => {
   console.error.mockRestore();
 });
 
+afterEach(() => {
+  // clean up any stubs
+  if (Element.prototype.getBoundingClientRect.mockRestore) {
+    Element.prototype.getBoundingClientRect.mockRestore();
+  }
+  if (window.getComputedStyle.mockRestore) {
+    window.getComputedStyle.mockRestore();
+  }
+});
+
 describe('dimension registration', () => {
   it('should register itself when mounting', () => {
     const marshal: DimensionMarshal = getMarshalStub();
@@ -128,16 +138,6 @@ describe('dimension registration', () => {
 });
 
 describe('dimension publishing', () => {
-  afterEach(() => {
-    // clean up any stubs
-    if (Element.prototype.getBoundingClientRect.mockRestore) {
-      Element.prototype.getBoundingClientRect.mockRestore();
-    }
-    if (window.getComputedStyle.mockRestore) {
-      window.getComputedStyle.mockRestore();
-    }
-  });
-
   it('should publish the dimensions of the target when requested', () => {
     const expected: DraggableDimension = getDraggableDimension({
       descriptor: {
