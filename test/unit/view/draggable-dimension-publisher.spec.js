@@ -35,7 +35,7 @@ const cleanPrototypeStubs = () => {
   }
 };
 
-before(() => {
+beforeAll(() => {
   cleanPrototypeStubs();
 });
 
