@@ -26,6 +26,19 @@ import type {
 const preset = getPreset();
 const noComputedSpacing = getComputedSpacing({});
 
+const cleanPrototypeStubs = () => {
+  if (Element.prototype.getBoundingClientRect.mockRestore) {
+    Element.prototype.getBoundingClientRect.mockRestore();
+  }
+  if (window.getComputedStyle.mockRestore) {
+    window.getComputedStyle.mockRestore();
+  }
+};
+
+before(() => {
+  cleanPrototypeStubs();
+});
+
 type Props = {|
   index?: number,
   draggableId?: DraggableId,
@@ -130,12 +143,7 @@ describe('dimension registration', () => {
 describe('dimension publishing', () => {
   afterEach(() => {
     // clean up any stubs
-    if (Element.prototype.getBoundingClientRect.mockRestore) {
-      Element.prototype.getBoundingClientRect.mockRestore();
-    }
-    if (window.getComputedStyle.mockRestore) {
-      window.getComputedStyle.mockRestore();
-    }
+    cleanPrototypeStubs();
   });
 
   it('should publish the dimensions of the target when requested', () => {
