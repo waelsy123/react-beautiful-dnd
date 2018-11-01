@@ -57,9 +57,8 @@ class Item extends Component<Props> {
   }
 }
 
-setViewport(preset.viewport);
-
 beforeEach(() => {
+  setViewport(preset.viewport);
   jest.spyOn(console, 'error').mockImplementation(() => {});
 });
 
