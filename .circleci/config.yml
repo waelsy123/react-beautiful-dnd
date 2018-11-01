@@ -110,9 +110,9 @@ jobs:
       - store_test_results:
           path: test-reports/junit
 
-      - run:
-          name: Browser Suite
-          command: node browser-test-harness.js yarn test:browser
+      #- run:
+      #    name: Browser Suite
+      #    command: node browser-test-harness.js yarn test:browser
 
       - store_test_results:
           path: test-reports/browser
