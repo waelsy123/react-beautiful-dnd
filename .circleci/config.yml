@@ -7,6 +7,8 @@ jobs:
     steps:
       # Fetch Code
       - checkout
+      # Add ssh keys
+      - add_ssh_keys
 
       - restore_cache:
           keys:
@@ -30,7 +32,7 @@ jobs:
           name: Install Dependencies
           command: yarn
 
-      - run: 
+      - run:
           name: Update Lockfile
           command: $(yarn global bin)/greenkeeper-lockfile-update
 
