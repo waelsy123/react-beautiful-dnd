@@ -14,11 +14,15 @@ function loadStories() {
 
 configure(loadStories, module);
 
-// const table = console.table || console.log;
+if (process.env.CI) {
+  return;
+}
 
-// console.log('environment');
-// table([
-//   ['react-beautiful-dnd version', version],
-//   ['react version', React.version],
-//   ['process.env.NODE_ENV', process.env.NODE_ENV],
-// ]);
+const table = console.table || console.log;
+
+console.log('environment');
+table([
+  ['react-beautiful-dnd version', version],
+  ['react version', React.version],
+  ['process.env.NODE_ENV', process.env.NODE_ENV],
+]);
