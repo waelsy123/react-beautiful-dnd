@@ -32,7 +32,7 @@
     "prettier_target": "*.{js,jsx,md,json} src/**/*.{js,jsx,md,json} test/**/*.{js,jsx,md,json} docs/**/*.{js,jsx,md,json} stories/**/*.{js,jsx,md,json} website/src/**/*.{js,jsx,md,json}"
   },
   "scripts": {
-    "test": "jest --config ./jest.config.js --ci",
+    "test": "jest --config ./jest.config.js --ci --forceExit",
     "test:browser": "testcafe 'chrome:headless,chrome:headless:emulation:device=iphone 6;touch=true,firefox:headless' ./test/browser/*  -r spec,xunit:./test-reports/browser/test-results.xml",
     "test:browser:local": "testcafe 'chrome' ./test/browser/*",
     "test:coverage": "yarn test --coverage --coveragePathIgnorePatterns=/debug",
