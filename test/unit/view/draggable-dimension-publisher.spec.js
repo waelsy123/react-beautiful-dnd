@@ -15,7 +15,6 @@ import type {
 } from '../../../src/state/dimension-marshal/dimension-marshal-types';
 import { withDimensionMarshal } from '../../utils/get-context-options';
 import forceUpdate from '../../utils/force-update';
-import { setViewport } from '../../utils/viewport';
 import { getMarshalStub } from '../../utils/dimension-marshal';
 import type {
   DraggableId,
@@ -57,16 +56,7 @@ class Item extends Component<Props> {
   }
 }
 
-beforeEach(() => {
-  setViewport(preset.viewport);
-  jest.spyOn(console, 'error').mockImplementation(() => {});
-});
-
-afterEach(() => {
-  console.error.mockRestore();
-});
-
-afterEach(() => {
+const cleanStubs = () => {
   // clean up any stubs
   if (Element.prototype.getBoundingClientRect.mockRestore) {
     Element.prototype.getBoundingClientRect.mockRestore();
@@ -74,6 +64,19 @@ afterEach(() => {
   if (window.getComputedStyle.mockRestore) {
     window.getComputedStyle.mockRestore();
   }
+};
+
+beforeAll(() => {
+  cleanStubs();
+});
+
+beforeEach(() => {
+  jest.spyOn(console, 'error').mockImplementation(() => {});
+});
+
+afterEach(() => {
+  cleanStubs();
+  console.error.mockRestore();
 });
 
 describe('dimension registration', () => {
